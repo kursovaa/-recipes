@@ -1,0 +1,1361 @@
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Сборник домашних рецептов</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    body {
+        background: #f9f4e9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .app-container {
+        max-width: 1300px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, #d96c3e, #b3421c);
+        color: white;
+        padding: 22px 25px;
+        border-radius: 40px;
+        text-align: center;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .search-box {
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .search-box input {
+        padding: 12px 20px;
+        border-radius: 40px;
+        border: none;
+        width: 320px;
+        max-width: 80vw;
+        font-size: 1rem;
+        outline: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .search-box button {
+        background: #fde4c2;
+        border: none;
+        border-radius: 40px;
+        padding: 12px 25px;
+        font-weight: bold;
+        font-size: 1rem;
+        color: #5e2e1c;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .search-box button:hover {
+        background: #f8d5a3;
+        transform: scale(1.02);
+    }
+
+    /* Main layout */
+    .main-layout {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    /* Sidebar categories */
+    .categories-sidebar {
+        background: #ffffff;
+        border-radius: 35px;
+        padding: 20px;
+        flex: 1 1 240px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        height: fit-content;
+    }
+    .categories-sidebar h2 {
+        font-size: 1.5rem;
+        color: #5e3a24;
+        margin-bottom: 15px;
+        border-bottom: 3px solid #e9b27a;
+        padding-bottom: 8px;
+    }
+    .category-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .category-item {
+        background: #fff6ee;
+        border-radius: 20px;
+        padding: 12px 18px;
+        font-weight: 600;
+        color: #5e3a24;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        border: 1px solid #fce0c1;
+    }
+    .category-item:hover, .category-item.active {
+        background: #e4874a;
+        color: white;
+        border-color: #e4874a;
+        transform: translateX(5px);
+    }
+    .recipe-list {
+        margin-top: 10px;
+        padding-left: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .recipe-link {
+        background: transparent;
+        border: none;
+        color: #6b442e;
+        font-size: 0.95rem;
+        cursor: pointer;
+        text-align: left;
+        padding: 6px 12px;
+        border-radius: 15px;
+        transition: 0.2s;
+        background: #fffaef;
+    }
+    .recipe-link:hover {
+        background: #ffdbb5;
+        color: #582f16;
+        font-weight: 600;
+    }
+
+    /* Content area */
+    .content-area {
+        flex: 3 1 600px;
+        background: white;
+        border-radius: 40px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        min-height: 450px;
+    }
+    .recipe-title {
+        font-size: 2rem;
+        color: #af4a21;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .ingredients-block, .steps-block {
+        margin: 25px 0;
+    }
+    .ingredients-block h3, .steps-block h3 {
+        font-size: 1.4rem;
+        color: #6a4028;
+        margin-bottom: 12px;
+        border-left: 6px solid #e4874a;
+        padding-left: 18px;
+    }
+    .ingredient-list {
+        list-style: disc inside;
+        background: #fef8f0;
+        padding: 18px;
+        border-radius: 25px;
+        color: #3e2c1c;
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    .step-card {
+        background: #faf4ea;
+        border-radius: 25px;
+        padding: 18px 22px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+    .step-text {
+        flex: 2 1 250px;
+        font-size: 1.05rem;
+        color: #2d2218;
+    }
+    .timer-btn {
+        background: #e4874a;
+        border: none;
+        color: white;
+        font-weight: bold;
+        padding: 12px 24px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 8px rgba(212, 131, 45, 0.4);
+    }
+    .timer-btn:hover {
+        background: #c45a28;
+    }
+    .timer-display {
+        background: #3e2c1c;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        min-width: 80px;
+        text-align: center;
+    }
+    .default-message {
+        color: #a99884;
+        font-style: italic;
+        font-size: 1.2rem;
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    /* Timer overlay */
+    .timer-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.65);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .timer-box {
+        background: white;
+        border-radius: 45px;
+        padding: 35px;
+        text-align: center;
+        min-width: 280px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+    .timer-box h2 {
+        color: #b3421c;
+        margin-bottom: 15px;
+    }
+    .timer-countdown {
+        font-size: 4rem;
+        font-weight: 700;
+        color: #5e2e1c;
+        margin: 15px 0;
+    }
+    .timer-close {
+        background: #d96c3e;
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    @media (max-width: 700px) {
+        .main-layout {
+            flex-direction: column;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+        }
+    }
+
+    /* Account bar */
+    .account-bar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: -6px;
+        flex-wrap: wrap;
+    }
+    .account-bar .user-email {
+        background: #fff;
+        color: #5e3a24;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .btn-pill {
+        background: #fde4c2;
+        border: none;
+        border-radius: 30px;
+        padding: 9px 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #5e2e1c;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .btn-pill:hover { background: #f8d5a3; transform: scale(1.03); }
+    .btn-pill.primary { background: #d96c3e; color: #fff; }
+    .btn-pill.primary:hover { background: #c45a28; }
+    .btn-pill.ghost { background: #fff; }
+
+    /* Modal */
+    .modal-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+        z-index: 1100;
+        padding: 30px 15px;
+        overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+        background: #fffaf3;
+        border-radius: 35px;
+        padding: 30px;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+        position: relative;
+    }
+    .modal h2 { color: #b3421c; margin-bottom: 18px; }
+    .modal label { display:block; font-weight:600; color:#5e3a24; margin:12px 0 5px; font-size:0.95rem; }
+    .modal input, .modal textarea {
+        width: 100%;
+        padding: 11px 16px;
+        border-radius: 18px;
+        border: 1px solid #e9c8a6;
+        font-size: 0.98rem;
+        outline: none;
+        background: #fff;
+        font-family: inherit;
+    }
+    .modal input:focus, .modal textarea:focus { border-color: #d96c3e; }
+    .modal textarea { resize: vertical; min-height: 70px; }
+    .modal .hint { font-size: 0.82rem; color: #a17c5b; margin-top: 4px; }
+    .modal-close {
+        position: absolute; top: 18px; right: 22px;
+        background: none; border: none; font-size: 1.6rem;
+        color: #b3421c; cursor: pointer; line-height: 1;
+    }
+    .modal-actions { display:flex; gap:10px; margin-top:22px; flex-wrap: wrap; }
+    .modal .switch-line { margin-top: 16px; font-size: 0.9rem; color: #6b442e; }
+    .modal .switch-line button { background:none; border:none; color:#d96c3e; font-weight:700; cursor:pointer; }
+    .form-msg { margin-top:14px; padding:10px 14px; border-radius:16px; font-size:0.9rem; display:none; }
+    .form-msg.err { display:block; background:#fde0db; color:#9e2b1a; }
+    .form-msg.ok  { display:block; background:#e2f3df; color:#2f7a3a; }
+    .author-badge {
+        display:inline-block; font-size:0.78rem; font-weight:700;
+        background:#fce0c1; color:#8a4a23; padding:3px 12px; border-radius:20px; margin-left:8px;
+    }
+    .recipe-link.user-recipe { border-left: 4px solid #d96c3e; }
+    .config-warning {
+        background:#fff3cd; color:#7a5a00; border:1px solid #ffe08a;
+        padding:14px 18px; border-radius:20px; margin-bottom:14px; font-size:0.9rem;
+    }
+</style>
+</head>
+<body>
+<div class="app-container">
+    <div class="account-bar" id="accountBar">
+        <!-- заполняется JS -->
+    </div>
+    <div class="header">
+        <h1>Сборник домашних рецептов</h1>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Введите название блюда...">
+            <button id="searchBtn">Найти</button>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <div class="categories-sidebar">
+            <h2>Категории</h2>
+            <ul class="category-list" id="categoryContainer"></ul>
+        </div>
+
+        <div class="content-area" id="contentArea">
+            <div class="default-message">Выберите блюдо из категорий или воспользуйтесь поиском</div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка авторизации -->
+<div id="authOverlay" class="modal-overlay">
+    <div class="modal">
+        <button class="modal-close" data-close="authOverlay">&times;</button>
+        <h2 id="authTitle">Вход</h2>
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
+        <label>Пароль</label>
+        <input type="password" id="authPassword" placeholder="минимум 6 символов" autocomplete="current-password">
+        <div class="form-msg" id="authMsg"></div>
+        <div class="modal-actions">
+            <button class="btn-pill primary" id="authSubmitBtn">Войти</button>
+            <button class="btn-pill ghost" data-close="authOverlay">Отмена</button>
+        </div>
+        <div class="switch-line" id="authSwitch"></div>
+    </div>
+</div>
+
+<!-- Модалка добавления рецепта -->
+<div id="recipeOverlay" class="modal-overlay">
+    <div class="modal">
+        <button class="modal-close" data-close="recipeOverlay">&times;</button>
+        <h2>Добавить свой рецепт</h2>
+        <label>Название блюда</label>
+        <input type="text" id="frName" placeholder="Например: Бабушкины щи">
+        <label>Категория</label>
+        <input type="text" id="frCategory" placeholder="Супы, Десерты, Завтраки…" list="catList">
+        <datalist id="catList"></datalist>
+        <label>Ингредиенты</label>
+        <textarea id="frIngredients" placeholder="Каждый ингредиент с новой строки"></textarea>
+        <div class="hint">По одному на строку.</div>
+        <label>Шаги приготовления</label>
+        <textarea id="frSteps" placeholder="Каждый шаг с новой строки.&#10;Время указывайте так: Варить картофель | 15"></textarea>
+        <div class="hint">По одному шагу на строку. Чтобы добавить таймер — в конце строки поставьте «| минуты», например: «Тушить мясо | 30».</div>
+        <div class="form-msg" id="frMsg"></div>
+        <div class="modal-actions">
+            <button class="btn-pill primary" id="frSubmitBtn">Опубликовать</button>
+            <button class="btn-pill ghost" data-close="recipeOverlay">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<div id="timerOverlay" class="timer-overlay" style="display: none;">
+    <div class="timer-box">
+        <h2>Таймер приготовления</h2>
+        <div class="timer-countdown" id="timerDisplay">00:00</div>
+        <button class="timer-close" id="stopTimerBtn">Остановить</button>
+    </div>
+</div>
+
+<script>
+    const builtinRecipes = [
+        { name: "Омлет", category: "Завтраки", ingredients: ["3 яйца", "50 мл молока", "соль", "перец", "20 г сливочного масла"], steps: [
+            { text: "Взбейте яйца с молоком, солью и перцем до однородности.", time: null },
+            { text: "Разогрейте сковороду со сливочным маслом на среднем огне.", time: null },
+            { text: "Вылейте смесь на сковороду и готовьте 4-5 минут, пока края не подрумянятся.", time: 5 },
+            { text: "Сверните омлет пополам или скатайте рулетом. Подавайте.", time: null }
+        ]},
+        { name: "Яичница", category: "Завтраки", ingredients: ["2-3 яйца", "сливочное или растительное масло", "соль", "перец"], steps: [
+            { text: "Разогрейте сковороду с маслом на среднем огне.", time: null },
+            { text: "Аккуратно разбейте яйца, стараясь не повредить желток.", time: null },
+            { text: "Жарьте 3 минуты для жидкого желтка или 5 минут для плотного.", time: 5 },
+            { text: "Посолите, поперчите. Подавайте сразу.", time: null }
+        ]},
+        { name: "Блины", category: "Завтраки", ingredients: ["200 г муки", "500 мл молока", "2 яйца", "1 ст.л. сахара", "щепотка соли", "2 ст.л. растительного масла"], steps: [
+            { text: "Смешайте яйца, сахар и соль. Добавьте половину молока.", time: null },
+            { text: "Просейте муку, замесите густое тесто без комков.", time: null },
+            { text: "Влейте оставшееся молоко и масло, перемешайте. Оставьте на 15 минут.", time: 15 },
+            { text: "Выпекайте блины на раскалённой сковороде с двух сторон до золотистого цвета.", time: null }
+        ]},
+        { name: "Оладьи", category: "Завтраки", ingredients: ["300 мл кефира", "1 яйцо", "200 г муки", "1 ст.л. сахара", "0.5 ч.л. соды", "щепотка соли", "масло для жарки"], steps: [
+            { text: "Смешайте кефир с яйцом, сахаром и солью.", time: null },
+            { text: "Добавьте муку и соду, быстро замесите густое тесто.", time: null },
+            { text: "Оставьте на 10 минут для реакции кефира с содой.", time: 10 },
+            { text: "Жарьте оладьи на среднем огне до пузырей и румяной корочки.", time: null }
+        ]},
+        { name: "Сырники", category: "Завтраки", ingredients: ["500 г творога", "1 яйцо", "3 ст.л. сахара", "4-5 ст.л. муки", "ванилин", "масло для жарки"], steps: [
+            { text: "Разомните творог вилкой, смешайте с яйцом, сахаром и ванилином.", time: null },
+            { text: "Добавьте муку, замесите плотное тесто.", time: null },
+            { text: "Сформируйте круглые сырники, обваляйте в муке.", time: null },
+            { text: "Обжаривайте на слабом огне по 4 минуты с каждой стороны.", time: 8 }
+        ]},
+        { name: "Борщ", category: "Супы", ingredients: ["300 г свеклы", "200 г капусты", "2 картофелины", "1 морковь", "1 луковица", "2 помидора", "1 ст.л. томатной пасты", "соль, перец", "лавровый лист", "сметана при подаче"], steps: [
+            { text: "Свеклу нарежьте соломкой и тушите с томатной пастой 15 минут.", time: 15 },
+            { text: "В кипящий бульон (или воду) положите нарезанный картофель и капусту.", time: null },
+            { text: "Сделайте зажарку из лука и моркови.", time: null },
+            { text: "Добавьте тушеную свеклу и зажарку в суп. Варите 20 минут.", time: 20 },
+            { text: "За 5 минут до готовности положите специи и помидоры.", time: 5 }
+        ]},
+        { name: "Щи", category: "Супы", ingredients: ["300 г свежей капусты", "2 картофелины", "1 морковь", "1 луковица", "2 помидора", "зелень", "соль, перец"], steps: [
+            { text: "В кипящий бульон положите нашинкованную капусту и картофель.", time: null },
+            { text: "Приготовьте пассировку из лука и моркови.", time: null },
+            { text: "Добавьте зажарку и нарезанные помидоры через 15 минут варки.", time: 15 },
+            { text: "Варите щи еще 20 минут на слабом огне. Посолите.", time: 20 }
+        ]},
+        { name: "Окрошка", category: "Супы", ingredients: ["3 картофелины", "3 яйца", "200 г колбасы или ветчины", "2 свежих огурца", "пучок укропа", "500 мл кваса", "сметана"], steps: [
+            { text: "Отварите картофель и яйца, остудите, нарежьте кубиками.", time: null },
+            { text: "Огурцы и колбасу нарежьте мелкими кубиками.", time: null },
+            { text: "Смешайте все ингредиенты, залейте квасом.", time: null },
+            { text: "Подавайте со сметаной и зеленью.", time: null }
+        ]},
+        { name: "Котлеты из фарша", category: "Горячие блюда", ingredients: ["500 г мясного фарша", "1 луковица", "1 яйцо", "2 зубчика чеснока", "соль, перец", "панировочные сухари"], steps: [
+            { text: "Смешайте фарш с мелко нарезанным луком, яйцом, чесноком и специями.", time: null },
+            { text: "Сформируйте котлеты, обваляйте в сухарях.", time: null },
+            { text: "Обжарьте с двух сторон до золотистой корки (по 7 минут).", time: 14 },
+            { text: "Доведите до готовности под крышкой с небольшим количеством воды 10 минут.", time: 10 }
+        ]},
+        { name: "Пельмени", category: "Горячие блюда", ingredients: ["400 г муки", "1 яйцо", "150 мл воды", "300 г фарша", "соль, перец"], steps: [
+            { text: "Замесите тесто из муки, яйца и воды, дайте отдохнуть 30 минут.", time: 30 },
+            { text: "Раскатайте тесто, вырежьте кружочки, слепите пельмени.", time: null },
+            { text: "Отваривайте в кипящей подсоленной воде 8 минут.", time: 8 },
+            { text: "Подавайте со сметаной или маслом.", time: null }
+        ]},
+        { name: "Харчо", category: "Супы", ingredients: ["400 г говядины", "100 г риса", "1 луковица", "2 зубчика чеснока", "3 ст.л. томатной пасты", "хмели-сунели", "грецкие орехи (горсть)", "зелень"], steps: [
+            { text: "Говядину отварите до готовности около 1,5 часов.", time: 90 },
+            { text: "Добавьте рис, варите 15 минут.", time: 15 },
+            { text: "Сделайте зажарку с луком и томатной пастой, введите в суп.", time: null },
+            { text: "Заправьте толчеными орехами, чесноком и специями. Варите еще 10 минут.", time: 10 }
+        ]},
+        { name: "Макароны по-флотски", category: "Горячие блюда", ingredients: ["300 г макарон", "400 г фарша", "1 луковица", "растительное масло", "соль, перец"], steps: [
+            { text: "Отварите макароны до состояния аль денте.", time: 8 },
+            { text: "Обжарьте лук до прозрачности, добавьте фарш и готовьте 12 минут.", time: 12 },
+            { text: "Смешайте макароны с фаршем, прогрейте вместе 3 минуты.", time: 3 }
+        ]},
+        { name: "Шарлотка", category: "Выпечка", ingredients: ["3 яйца", "1 стакан сахара", "1 стакан муки", "3-4 яблока", "корица", "щепотка разрыхлителя"], steps: [
+            { text: "Взбейте яйца с сахаром до пышной пены.", time: null },
+            { text: "Добавьте муку и разрыхлитель, аккуратно перемешайте.", time: null },
+            { text: "Нарежьте яблоки дольками, выложите в форму.", time: null },
+            { text: "Залейте тестом, выпекайте при 180°C 35-40 минут.", time: 40 }
+        ]},
+        { name: "Манник", category: "Выпечка", ingredients: ["1 стакан манки", "1 стакан кефира", "1 яйцо", "0.5 стакана сахара", "1 ч.л. разрыхлителя", "ванилин"], steps: [
+            { text: "Замочите манку в кефире на 30 минут.", time: 30 },
+            { text: "Добавьте яйцо, сахар, разрыхлитель, перемешайте.", time: null },
+            { text: "Вылейте в форму и выпекайте 25-30 минут при 180°C.", time: 30 }
+        ]},
+        { name: "Греческий салат", category: "Салаты", ingredients: ["2 помидора", "1 огурец", "1 болгарский перец", "красный лук", "100 г феты", "оливки", "оливковое масло", "орегано"], steps: [
+            { text: "Нарежьте овощи крупными кусочками.", time: null },
+            { text: "Добавьте кубики феты и оливки.", time: null },
+            { text: "Заправьте маслом, посыпьте орегано.", time: null }
+        ]},
+        { name: "Оливье", category: "Салаты", ingredients: ["2 картофелины", "2 моркови", "3 яйца", "200 г колбасы", "2 соленых огурца", "горошек", "майонез"], steps: [
+            { text: "Отварите картофель, морковь и яйца, остудите.", time: null },
+            { text: "Нарежьте все ингредиенты кубиками.", time: null },
+            { text: "Смешайте с горошком, заправьте майонезом.", time: null }
+        ]},
+        { name: "Винегрет", category: "Салаты", ingredients: ["2 свеклы", "2 картофелины", "1 морковь", "соленые огурцы", "квашеная капуста", "растительное масло"], steps: [
+            { text: "Отварите или запеките свеклу, картофель, морковь.", time: null },
+            { text: "Нарежьте кубиками, добавьте капусту и огурцы.", time: null },
+            { text: "Заправьте маслом, перемешайте.", time: null }
+        ]},
+        { name: "Селёдка под шубой", category: "Салаты", ingredients: ["1 сельдь", "2 свеклы", "2 картофелины", "1 морковь", "2 яйца", "майонез"], steps: [
+            { text: "Отварите овощи и яйца, натрите на терке.", time: null },
+            { text: "Выложите слоями: сельдь, лук, картофель, морковь, свекла, яйца.", time: null },
+            { text: "Каждый слой промазывайте майонезом. Дайте настояться 2 часа.", time: 120 }
+        ]},
+        { name: "Мясо по-французски", category: "Горячие блюда", ingredients: ["500 г свинины", "3 картофелины", "1 луковица", "150 г сыра", "майонез", "соль, перец"], steps: [
+            { text: "Нарежьте мясо порционно, отбейте, посолите.", time: null },
+            { text: "Выложите на противень слоями: мясо, лук, картофель.", time: null },
+            { text: "Смажьте майонезом, посыпьте сыром. Запекайте 45 минут при 190°C.", time: 45 }
+        ]},
+        { name: "Свекольник", category: "Супы", ingredients: ["3 свеклы", "2 картофелины", "1 морковь", "2 яйца", "кефир или свекольный отвар", "зелень"], steps: [
+            { text: "Свеклу и картофель отварите, остудите, натрите.", time: null },
+            { text: "Смешайте с вареными яйцами и зеленью.", time: null },
+            { text: "Залейте кефиром или охлажденным отваром.", time: null }
+        ]},
+        { name: "Рисовая каша", category: "Каши", ingredients: ["1 стакан риса", "2 стакана молока", "2 стакана воды", "сахар", "соль", "сливочное масло"], steps: [
+            { text: "Промойте рис, залейте водой, варите 10 минут.", time: 10 },
+            { text: "Добавьте горячее молоко, сахар, соль. Варите на слабом огне 20 минут.", time: 20 }
+        ]},
+        { name: "Гречневая каша", category: "Каши", ingredients: ["1 стакан гречки", "2 стакана воды", "соль", "сливочное масло"], steps: [
+            { text: "Промойте крупу, залейте водой, доведите до кипения.", time: null },
+            { text: "Убавьте огонь, варите под крышкой 15 минут до впитывания воды.", time: 15 },
+            { text: "Добавьте масло, перемешайте.", time: null }
+        ]},
+        { name: "Гуляш", category: "Горячие блюда", ingredients: ["500 г говядины", "2 луковицы", "2 ст.л. томатной пасты", "1 ст.л. муки", "соль, перец", "паприка"], steps: [
+            { text: "Мясо обжарьте крупными кусками до корочки.", time: 10 },
+            { text: "Добавьте лук, томатную пасту, паприку, муку. Потушите 5 минут.", time: 5 },
+            { text: "Залейте водой, тушите под крышкой 1,5 часа.", time: 90 }
+        ]},
+        { name: "Мясо по-строгановски с пюре", category: "Горячие блюда", ingredients: ["400 г говядины", "1 луковица", "200 г сметаны", "2 ст.л. томатной пасты", "соль, перец", "картофель для пюре"], steps: [
+            { text: "Мясо нарежьте соломкой, обжарьте с луком 7 минут.", time: 7 },
+            { text: "Добавьте сметану и томатную пасту, тушите 20 минут.", time: 20 },
+            { text: "Параллельно приготовьте картофельное пюре.", time: null },
+            { text: "Подавайте мясо с пюре.", time: null }
+        ]},
+        // ===== ЗАВТРАКИ =====
+        { name: "Овсяная каша на молоке", category: "Завтраки", ingredients: ["1 стакан овсяных хлопьев", "2 стакана молока", "1 стакан воды", "1 ст.л. сахара", "щепотка соли", "сливочное масло"], steps: [
+            { text: "Доведите молоко с водой до кипения, посолите.", time: null },
+            { text: "Всыпьте хлопья, варите на слабом огне 7 минут, помешивая.", time: 7 },
+            { text: "Добавьте сахар и масло, накройте, дайте настояться 3 минуты.", time: 3 }
+        ]},
+        { name: "Гренки сладкие", category: "Завтраки", ingredients: ["4 ломтика батона", "2 яйца", "100 мл молока", "1 ст.л. сахара", "сливочное масло"], steps: [
+            { text: "Взбейте яйца с молоком и сахаром.", time: null },
+            { text: "Обмакните ломтики хлеба в смесь с двух сторон.", time: null },
+            { text: "Обжарьте на масле до золотистого цвета по 2 минуты с каждой стороны.", time: 4 }
+        ]},
+        { name: "Творожная запеканка", category: "Завтраки", ingredients: ["500 г творога", "2 яйца", "3 ст.л. манки", "4 ст.л. сахара", "горсть изюма", "ванилин"], steps: [
+            { text: "Смешайте творог, яйца, сахар, манку и ванилин.", time: null },
+            { text: "Добавьте промытый изюм, оставьте на 15 минут для набухания манки.", time: 15 },
+            { text: "Выложите в форму, выпекайте при 180°C 40 минут.", time: 40 }
+        ]},
+        { name: "Яйца пашот", category: "Завтраки", ingredients: ["2 яйца", "1 л воды", "1 ст.л. уксуса", "соль"], steps: [
+            { text: "Доведите воду с уксусом и солью до лёгкого кипения, создайте воронку.", time: null },
+            { text: "Аккуратно влейте яйцо в центр воронки.", time: null },
+            { text: "Варите 3 минуты, выньте шумовкой, обсушите.", time: 3 }
+        ]},
+        { name: "Каша манная", category: "Завтраки", ingredients: ["500 мл молока", "3 ст.л. манки", "1 ст.л. сахара", "щепотка соли", "сливочное масло"], steps: [
+            { text: "Доведите молоко до кипения с сахаром и солью.", time: null },
+            { text: "Тонкой струйкой всыпьте манку, постоянно помешивая.", time: null },
+            { text: "Варите 5 минут на слабом огне, добавьте масло.", time: 5 }
+        ]},
+        { name: "Бутерброды с яйцом и авокадо", category: "Завтраки", ingredients: ["2 ломтика хлеба", "1 авокадо", "1 яйцо", "соль, перец", "лимонный сок"], steps: [
+            { text: "Подсушите хлеб в тостере.", time: null },
+            { text: "Разомните авокадо с лимонным соком, солью и перцем.", time: null },
+            { text: "Намажьте на хлеб, сверху выложите варёное или жареное яйцо.", time: null }
+        ]},
+        { name: "Каша пшённая с тыквой", category: "Завтраки", ingredients: ["1 стакан пшена", "300 г тыквы", "500 мл молока", "сахар", "соль", "масло"], steps: [
+            { text: "Тыкву нарежьте кубиками, припустите в молоке 10 минут.", time: 10 },
+            { text: "Добавьте промытое пшено, сахар, соль.", time: null },
+            { text: "Варите под крышкой 25 минут до мягкости, заправьте маслом.", time: 25 }
+        ]},
+        { name: "Драники", category: "Завтраки", ingredients: ["6 картофелин", "1 луковица", "1 яйцо", "2 ст.л. муки", "соль, перец", "масло для жарки"], steps: [
+            { text: "Натрите картофель и лук на тёрке, отожмите лишнюю жидкость.", time: null },
+            { text: "Добавьте яйцо, муку, соль, перец, перемешайте.", time: null },
+            { text: "Жарьте на масле по 3 минуты с каждой стороны до румяности.", time: 6 }
+        ]},
+        // ===== СУПЫ =====
+        { name: "Куриный суп с лапшой", category: "Супы", ingredients: ["300 г курицы", "100 г лапши", "2 картофелины", "1 морковь", "1 луковица", "зелень", "соль, перец"], steps: [
+            { text: "Отварите курицу 40 минут, выньте, нарежьте, бульон процедите.", time: 40 },
+            { text: "Добавьте картофель, через 10 минут — зажарку из лука и моркови.", time: 10 },
+            { text: "Засыпьте лапшу и мясо, варите 7 минут, посыпьте зеленью.", time: 7 }
+        ]},
+        { name: "Гороховый суп", category: "Супы", ingredients: ["200 г гороха", "300 г копчёных рёбрышек", "2 картофелины", "1 морковь", "1 луковица", "соль, перец"], steps: [
+            { text: "Замочите горох на 2 часа, отварите с рёбрышками 1 час.", time: 60 },
+            { text: "Добавьте картофель, варите 15 минут.", time: 15 },
+            { text: "Введите зажарку из лука и моркови, доведите до готовности 5 минут.", time: 5 }
+        ]},
+        { name: "Грибной суп", category: "Супы", ingredients: ["300 г шампиньонов", "2 картофелины", "1 морковь", "1 луковица", "100 мл сливок", "зелень", "соль, перец"], steps: [
+            { text: "Грибы нарежьте, обжарьте с луком и морковью 10 минут.", time: 10 },
+            { text: "В кипящую воду положите картофель, варите 15 минут.", time: 15 },
+            { text: "Добавьте грибную зажарку и сливки, прогрейте 5 минут.", time: 5 }
+        ]},
+        { name: "Уха", category: "Супы", ingredients: ["500 г рыбы", "2 картофелины", "1 морковь", "1 луковица", "лавровый лист", "перец горошком", "зелень"], steps: [
+            { text: "Отварите рыбу с луком 20 минут, выньте, бульон процедите.", time: 20 },
+            { text: "Добавьте картофель и морковь, варите 15 минут.", time: 15 },
+            { text: "Верните рыбу, добавьте специи и зелень, дайте настояться 5 минут.", time: 5 }
+        ]},
+        { name: "Солянка мясная", category: "Супы", ingredients: ["400 г мясного ассорти", "3 солёных огурца", "1 луковица", "2 ст.л. томатной пасты", "оливки", "лимон", "сметана"], steps: [
+            { text: "Сварите мясной бульон, мясо нарежьте.", time: 60 },
+            { text: "Обжарьте лук с томатной пастой и нарезанными огурцами 7 минут.", time: 7 },
+            { text: "Соедините всё в кастрюле, варите 15 минут, подавайте с лимоном и сметаной.", time: 15 }
+        ]},
+        { name: "Сырный суп", category: "Супы", ingredients: ["200 г плавленого сыра", "2 картофелины", "1 морковь", "1 луковица", "гренки", "зелень"], steps: [
+            { text: "В кипящую воду положите картофель, варите 12 минут.", time: 12 },
+            { text: "Добавьте зажарку из лука и моркови.", time: null },
+            { text: "Введите плавленый сыр, варите помешивая 7 минут до растворения.", time: 7 }
+        ]},
+        { name: "Суп-пюре из брокколи", category: "Супы", ingredients: ["400 г брокколи", "2 картофелины", "1 луковица", "100 мл сливок", "соль, перец"], steps: [
+            { text: "Отварите картофель, лук и брокколи до мягкости 15 минут.", time: 15 },
+            { text: "Пробейте блендером до однородности.", time: null },
+            { text: "Добавьте сливки, прогрейте, посолите.", time: null }
+        ]},
+        { name: "Том ям", category: "Супы", ingredients: ["300 г креветок", "200 г грибов", "лемонграсс", "имбирь", "паста том ям", "кокосовое молоко", "лайм", "чили"], steps: [
+            { text: "Вскипятите воду с лемонграссом, имбирём и пастой том ям.", time: null },
+            { text: "Добавьте грибы и креветки, варите 5 минут.", time: 5 },
+            { text: "Влейте кокосовое молоко и сок лайма, прогрейте 2 минуты.", time: 2 }
+        ]},
+        { name: "Минестроне", category: "Супы", ingredients: ["1 цукини", "1 морковь", "1 стебель сельдерея", "200 г фасоли", "100 г пасты", "помидоры", "соль, перец"], steps: [
+            { text: "Обжарьте нарезанные овощи 7 минут.", time: 7 },
+            { text: "Добавьте помидоры и воду, варите 15 минут.", time: 15 },
+            { text: "Засыпьте пасту и фасоль, варите до готовности 10 минут.", time: 10 }
+        ]},
+        // ===== ГОРЯЧИЕ БЛЮДА =====
+        { name: "Плов", category: "Горячие блюда", ingredients: ["500 г баранины или говядины", "2 стакана риса", "2 моркови", "2 луковицы", "головка чеснока", "зира", "растительное масло", "соль"], steps: [
+            { text: "Обжарьте мясо в казане до корочки.", time: 10 },
+            { text: "Добавьте лук и морковь соломкой, обжарьте 10 минут.", time: 10 },
+            { text: "Залейте водой, тушите зирвак 30 минут.", time: 30 },
+            { text: "Засыпьте рис, добавьте чеснок и зиру, готовьте под крышкой 25 минут.", time: 25 }
+        ]},
+        { name: "Тушёная картошка с мясом", category: "Горячие блюда", ingredients: ["500 г свинины", "6 картофелин", "1 морковь", "1 луковица", "лавровый лист", "соль, перец"], steps: [
+            { text: "Обжарьте мясо до румяности 10 минут.", time: 10 },
+            { text: "Добавьте лук и морковь, обжарьте ещё 5 минут.", time: 5 },
+            { text: "Положите картофель, залейте водой, тушите 35 минут.", time: 35 }
+        ]},
+        { name: "Голубцы", category: "Горячие блюда", ingredients: ["1 кочан капусты", "400 г фарша", "100 г риса", "1 луковица", "1 морковь", "томатная паста", "сметана"], steps: [
+            { text: "Отварите листья капусты до мягкости 5 минут.", time: 5 },
+            { text: "Смешайте фарш с отваренным рисом и луком, заверните в листья.", time: null },
+            { text: "Уложите в кастрюлю, залейте соусом из томата и сметаны, тушите 50 минут.", time: 50 }
+        ]},
+        { name: "Запечённая курица", category: "Горячие блюда", ingredients: ["1 тушка курицы", "3 зубчика чеснока", "2 ст.л. масла", "паприка", "соль, перец", "лимон"], steps: [
+            { text: "Натрите курицу смесью масла, чеснока и специй, оставьте на 30 минут.", time: 30 },
+            { text: "Положите внутрь дольки лимона.", time: null },
+            { text: "Запекайте при 200°C 60 минут до золотистой корочки.", time: 60 }
+        ]},
+        { name: "Свиные отбивные", category: "Горячие блюда", ingredients: ["4 куска свинины", "2 яйца", "панировочные сухари", "мука", "соль, перец", "масло"], steps: [
+            { text: "Отбейте мясо, посолите, поперчите.", time: null },
+            { text: "Обваляйте в муке, затем в яйце, затем в сухарях.", time: null },
+            { text: "Обжарьте по 5 минут с каждой стороны до корочки.", time: 10 }
+        ]},
+        { name: "Жаркое в горшочках", category: "Горячие блюда", ingredients: ["500 г мяса", "5 картофелин", "1 морковь", "1 луковица", "грибы", "сметана", "специи"], steps: [
+            { text: "Обжарьте мясо и овощи по отдельности.", time: 10 },
+            { text: "Уложите слоями в горшочки, залейте бульоном со сметаной.", time: null },
+            { text: "Запекайте под крышкой при 180°C 60 минут.", time: 60 }
+        ]},
+        { name: "Рагу овощное", category: "Горячие блюда", ingredients: ["2 кабачка", "2 баклажана", "1 болгарский перец", "2 помидора", "1 луковица", "чеснок", "зелень"], steps: [
+            { text: "Нарежьте все овощи кубиками.", time: null },
+            { text: "Обжарьте лук, добавьте остальные овощи.", time: 5 },
+            { text: "Тушите под крышкой 25 минут, добавьте чеснок и зелень.", time: 25 }
+        ]},
+        { name: "Запеканка картофельная с фаршем", category: "Горячие блюда", ingredients: ["1 кг картофеля", "500 г фарша", "1 луковица", "100 г сыра", "молоко", "масло", "соль"], steps: [
+            { text: "Сварите пюре из картофеля с молоком и маслом.", time: 20 },
+            { text: "Обжарьте фарш с луком 12 минут.", time: 12 },
+            { text: "Выложите слоями пюре-фарш-пюре, посыпьте сыром, запекайте 25 минут.", time: 25 }
+        ]},
+        { name: "Курица карри", category: "Горячие блюда", ingredients: ["500 г куриного филе", "1 луковица", "2 ст.л. пасты карри", "400 мл кокосового молока", "имбирь", "чеснок", "рис на гарнир"], steps: [
+            { text: "Обжарьте лук, имбирь и чеснок 3 минуты.", time: 3 },
+            { text: "Добавьте курицу и пасту карри, обжарьте 7 минут.", time: 7 },
+            { text: "Влейте кокосовое молоко, тушите 20 минут, подавайте с рисом.", time: 20 }
+        ]},
+        { name: "Лазанья", category: "Горячие блюда", ingredients: ["листы лазаньи", "500 г фарша", "соус болоньезе", "соус бешамель", "200 г сыра", "помидоры"], steps: [
+            { text: "Приготовьте мясной соус болоньезе, потушив фарш с томатами 20 минут.", time: 20 },
+            { text: "Выкладывайте слоями: листы, болоньезе, бешамель, повторяя.", time: null },
+            { text: "Посыпьте сыром, запекайте при 180°C 35 минут.", time: 35 }
+        ]},
+        { name: "Тефтели в томатном соусе", category: "Горячие блюда", ingredients: ["500 г фарша", "100 г риса", "1 луковица", "1 яйцо", "томатный соус", "сметана", "соль, перец"], steps: [
+            { text: "Смешайте фарш с отваренным рисом, луком и яйцом, сформируйте шарики.", time: null },
+            { text: "Обжарьте тефтели до корочки 8 минут.", time: 8 },
+            { text: "Залейте соусом из томата и сметаны, тушите 25 минут.", time: 25 }
+        ]},
+        { name: "Рыба запечённая", category: "Горячие блюда", ingredients: ["600 г филе рыбы", "1 лимон", "2 ст.л. масла", "чеснок", "зелень", "соль, перец"], steps: [
+            { text: "Натрите рыбу маслом, чесноком, солью и перцем.", time: null },
+            { text: "Сбрызните лимонным соком, оставьте на 15 минут.", time: 15 },
+            { text: "Запекайте при 200°C 25 минут.", time: 25 }
+        ]},
+        { name: "Бефстроганов", category: "Горячие блюда", ingredients: ["500 г говядины", "1 луковица", "200 мл сметаны", "1 ст.л. муки", "1 ст.л. горчицы", "соль, перец"], steps: [
+            { text: "Нарежьте мясо тонкой соломкой, обжарьте на сильном огне 5 минут.", time: 5 },
+            { text: "Добавьте лук, обжарьте, всыпьте муку.", time: null },
+            { text: "Введите сметану с горчицей, тушите 20 минут.", time: 20 }
+        ]},
+        { name: "Паста карбонара", category: "Горячие блюда", ingredients: ["350 г спагетти", "150 г бекона", "3 яичных желтка", "100 г пармезана", "чёрный перец", "соль"], steps: [
+            { text: "Отварите спагетти до аль денте.", time: 10 },
+            { text: "Обжарьте бекон до хруста.", time: 5 },
+            { text: "Смешайте горячую пасту с беконом, желтками и сыром вне огня.", time: null }
+        ]},
+        { name: "Шашлык из свинины", category: "Горячие блюда", ingredients: ["1 кг свиной шеи", "3 луковицы", "соль, перец", "специи для шашлыка", "уксус или лимон"], steps: [
+            { text: "Нарежьте мясо кусками, замаринуйте с луком и специями на 3 часа.", time: 180 },
+            { text: "Нанижите на шампуры.", time: null },
+            { text: "Жарьте над углями 20 минут, переворачивая.", time: 20 }
+        ]},
+        { name: "Курица в кисло-сладком соусе", category: "Горячие блюда", ingredients: ["500 г куриного филе", "1 болгарский перец", "ананас", "соевый соус", "томатная паста", "уксус", "сахар", "крахмал"], steps: [
+            { text: "Обжарьте кусочки курицы в крахмале до корочки 8 минут.", time: 8 },
+            { text: "Добавьте перец и ананас, обжарьте 3 минуты.", time: 3 },
+            { text: "Влейте соус из соевого соуса, томата, уксуса и сахара, прогрейте 5 минут.", time: 5 }
+        ]},
+        // ===== САЛАТЫ =====
+        { name: "Цезарь с курицей", category: "Салаты", ingredients: ["200 г куриного филе", "романо или айсберг", "гренки", "пармезан", "соус цезарь", "помидоры черри"], steps: [
+            { text: "Обжарьте куриное филе, нарежьте полосками.", time: 10 },
+            { text: "Порвите салат, выложите на блюдо с гренками и черри.", time: null },
+            { text: "Добавьте курицу, полейте соусом, посыпьте пармезаном.", time: null }
+        ]},
+        { name: "Крабовый салат", category: "Салаты", ingredients: ["200 г крабовых палочек", "3 яйца", "1 банка кукурузы", "150 г риса", "майонез", "зелень"], steps: [
+            { text: "Отварите рис и яйца, остудите.", time: null },
+            { text: "Нарежьте крабовые палочки и яйца кубиками.", time: null },
+            { text: "Смешайте с кукурузой и рисом, заправьте майонезом.", time: null }
+        ]},
+        { name: "Мимоза", category: "Салаты", ingredients: ["1 банка консервы рыбной", "4 яйца", "1 луковица", "100 г сыра", "майонез", "сливочное масло"], steps: [
+            { text: "Разомните рыбу, отварите яйца, натрите по отдельности белки и желтки.", time: null },
+            { text: "Выкладывайте слоями: рыба, лук, белки, сыр, масло.", time: null },
+            { text: "Промазывайте майонезом, верх посыпьте желтком. Охладите 1 час.", time: 60 }
+        ]},
+        { name: "Тёплый салат с говядиной", category: "Салаты", ingredients: ["300 г говядины", "микс салата", "помидоры черри", "болгарский перец", "соевый соус", "мёд", "кунжут"], steps: [
+            { text: "Обжарьте полоски говядины на сильном огне 5 минут.", time: 5 },
+            { text: "Добавьте перец, влейте соус из соевого соуса и мёда.", time: null },
+            { text: "Выложите на салатные листья с черри, посыпьте кунжутом.", time: null }
+        ]},
+        { name: "Капрезе", category: "Салаты", ingredients: ["3 помидора", "200 г моцареллы", "свежий базилик", "оливковое масло", "бальзамик", "соль"], steps: [
+            { text: "Нарежьте помидоры и моцареллу кружочками.", time: null },
+            { text: "Выложите вперемешку, прослоив листьями базилика.", time: null },
+            { text: "Полейте маслом и бальзамиком, посолите.", time: null }
+        ]},
+        { name: "Салат с тунцом", category: "Салаты", ingredients: ["1 банка тунца", "микс салата", "помидоры черри", "огурец", "красный лук", "оливки", "оливковое масло"], steps: [
+            { text: "Нарежьте овощи, выложите на листья салата.", time: null },
+            { text: "Добавьте кусочки тунца и оливки.", time: null },
+            { text: "Заправьте оливковым маслом.", time: null }
+        ]},
+        { name: "Салат витаминный из капусты", category: "Салаты", ingredients: ["300 г белокочанной капусты", "1 морковь", "1 яблоко", "лимонный сок", "сахар", "растительное масло"], steps: [
+            { text: "Нашинкуйте капусту, посолите и слегка помните.", time: null },
+            { text: "Добавьте тёртую морковь и яблоко.", time: null },
+            { text: "Заправьте маслом, лимонным соком и сахаром.", time: null }
+        ]},
+        { name: "Салат Цезарь с креветками", category: "Салаты", ingredients: ["250 г креветок", "айсберг", "гренки", "пармезан", "соус цезарь", "чеснок"], steps: [
+            { text: "Обжарьте креветки с чесноком 4 минуты.", time: 4 },
+            { text: "Выложите салат с гренками, сверху креветки.", time: null },
+            { text: "Полейте соусом, посыпьте пармезаном.", time: null }
+        ]},
+        // ===== ВЫПЕЧКА =====
+        { name: "Пирог с яблоками", category: "Выпечка", ingredients: ["300 г муки", "200 г сливочного масла", "150 г сахара", "2 яйца", "4 яблока", "корица", "разрыхлитель"], steps: [
+            { text: "Замесите песочное тесто из муки, масла, сахара и яиц, охладите 30 минут.", time: 30 },
+            { text: "Раскатайте, выложите в форму, сверху — яблоки с корицей.", time: null },
+            { text: "Выпекайте при 180°C 40 минут.", time: 40 }
+        ]},
+        { name: "Печенье овсяное", category: "Выпечка", ingredients: ["150 г овсяных хлопьев", "100 г муки", "100 г масла", "100 г сахара", "1 яйцо", "разрыхлитель"], steps: [
+            { text: "Смешайте размягчённое масло с сахаром и яйцом.", time: null },
+            { text: "Добавьте хлопья, муку и разрыхлитель, замесите тесто.", time: null },
+            { text: "Сформируйте печенье, выпекайте при 180°C 15 минут.", time: 15 }
+        ]},
+        { name: "Кекс лимонный", category: "Выпечка", ingredients: ["200 г муки", "150 г сахара", "100 г масла", "3 яйца", "1 лимон", "разрыхлитель"], steps: [
+            { text: "Взбейте масло с сахаром, добавьте яйца по одному.", time: null },
+            { text: "Введите муку с разрыхлителем, цедру и сок лимона.", time: null },
+            { text: "Выпекайте в форме при 180°C 45 минут.", time: 45 }
+        ]},
+        { name: "Пицца Маргарита", category: "Выпечка", ingredients: ["300 г муки", "200 мл воды", "7 г дрожжей", "томатный соус", "200 г моцареллы", "базилик", "оливковое масло"], steps: [
+            { text: "Замесите дрожжевое тесто, дайте подойти 1 час.", time: 60 },
+            { text: "Раскатайте основу, смажьте соусом, выложите моцареллу.", time: null },
+            { text: "Выпекайте при 250°C 12 минут, украсьте базиликом.", time: 12 }
+        ]},
+        { name: "Булочки с корицей", category: "Выпечка", ingredients: ["400 г муки", "200 мл молока", "7 г дрожжей", "50 г сахара", "масло", "корица", "коричневый сахар"], steps: [
+            { text: "Замесите сдобное тесто, дайте подойти 1 час.", time: 60 },
+            { text: "Раскатайте, смажьте маслом, посыпьте корицей и сахаром, сверните рулетом.", time: null },
+            { text: "Нарежьте, дайте расстояться 20 минут, выпекайте 25 минут при 180°C.", time: 25 }
+        ]},
+        { name: "Чизкейк", category: "Выпечка", ingredients: ["200 г печенья", "100 г масла", "600 г сливочного сыра", "150 г сахара", "3 яйца", "ваниль"], steps: [
+            { text: "Измельчите печенье с маслом, утрамбуйте в форму как основу.", time: null },
+            { text: "Взбейте сыр с сахаром, яйцами и ванилью.", time: null },
+            { text: "Вылейте на основу, выпекайте при 160°C 50 минут, охладите.", time: 50 }
+        ]},
+        { name: "Пирожки с капустой", category: "Выпечка", ingredients: ["500 г муки", "250 мл молока", "11 г дрожжей", "300 г капусты", "1 луковица", "1 яйцо", "масло"], steps: [
+            { text: "Замесите дрожжевое тесто, дайте подойти 1 час.", time: 60 },
+            { text: "Потушите капусту с луком 20 минут до мягкости.", time: 20 },
+            { text: "Сформируйте пирожки, выпекайте при 190°C 25 минут.", time: 25 }
+        ]},
+        { name: "Маффины шоколадные", category: "Выпечка", ingredients: ["200 г муки", "150 г сахара", "2 ст.л. какао", "100 мл молока", "100 мл масла", "2 яйца", "шоколадные капли", "разрыхлитель"], steps: [
+            { text: "Смешайте сухие ингредиенты отдельно от жидких.", time: null },
+            { text: "Соедините, добавьте шоколадные капли, не перемешивайте долго.", time: null },
+            { text: "Разлейте по формам, выпекайте при 180°C 20 минут.", time: 20 }
+        ]},
+        { name: "Хачапури по-аджарски", category: "Выпечка", ingredients: ["300 г муки", "150 мл молока", "7 г дрожжей", "200 г сулугуни", "100 г имеретинского сыра", "2 яйца", "масло"], steps: [
+            { text: "Замесите тесто, дайте подойти 1 час.", time: 60 },
+            { text: "Сформируйте лодочку, наполните тёртым сыром.", time: null },
+            { text: "Выпекайте 15 минут, вбейте яйцо, допеките 3 минуты, добавьте масло.", time: 15 }
+        ]},
+        // ===== КАШИ =====
+        { name: "Перловая каша", category: "Каши", ingredients: ["1 стакан перловки", "3 стакана воды", "соль", "сливочное масло"], steps: [
+            { text: "Замочите перловку на 2 часа, промойте.", time: 120 },
+            { text: "Залейте водой, доведите до кипения, посолите.", time: null },
+            { text: "Варите под крышкой на слабом огне 50 минут, заправьте маслом.", time: 50 }
+        ]},
+        { name: "Кукурузная каша", category: "Каши", ingredients: ["1 стакан кукурузной крупы", "3 стакана воды или молока", "соль", "сахар", "масло"], steps: [
+            { text: "Доведите воду до кипения, посолите.", time: null },
+            { text: "Всыпьте крупу тонкой струйкой, помешивая.", time: null },
+            { text: "Варите на слабом огне 25 минут, добавьте масло.", time: 25 }
+        ]},
+        { name: "Каша Дружба", category: "Каши", ingredients: ["0.5 стакана риса", "0.5 стакана пшена", "600 мл молока", "сахар", "соль", "масло"], steps: [
+            { text: "Промойте обе крупы, залейте водой, варите 10 минут.", time: 10 },
+            { text: "Добавьте горячее молоко, сахар и соль.", time: null },
+            { text: "Варите на слабом огне 20 минут, заправьте маслом.", time: 20 }
+        ]},
+        { name: "Булгур с овощами", category: "Каши", ingredients: ["1 стакан булгура", "2 стакана воды", "1 морковь", "1 луковица", "болгарский перец", "соль, специи"], steps: [
+            { text: "Обжарьте лук, морковь и перец 7 минут.", time: 7 },
+            { text: "Добавьте булгур, обжарьте 2 минуты.", time: 2 },
+            { text: "Залейте водой, варите под крышкой 15 минут.", time: 15 }
+        ]},
+        { name: "Ячневая каша", category: "Каши", ingredients: ["1 стакан ячневой крупы", "3 стакана воды", "соль", "масло"], steps: [
+            { text: "Промойте крупу, залейте водой, доведите до кипения.", time: null },
+            { text: "Посолите, варите на слабом огне 25 минут под крышкой.", time: 25 },
+            { text: "Добавьте масло, дайте настояться.", time: null }
+        ]},
+        // ===== ДЕСЕРТЫ =====
+        { name: "Панкейки", category: "Десерты", ingredients: ["200 г муки", "250 мл молока", "1 яйцо", "2 ст.л. сахара", "разрыхлитель", "масло"], steps: [
+            { text: "Смешайте муку, сахар и разрыхлитель.", time: null },
+            { text: "Добавьте яйцо и молоко, замесите тесто без комков.", time: null },
+            { text: "Жарьте на сухой сковороде по 2 минуты с каждой стороны.", time: 4 }
+        ]},
+        { name: "Тирамису", category: "Десерты", ingredients: ["250 г маскарпоне", "3 яйца", "100 г сахара", "савоярди", "крепкий кофе", "какао"], steps: [
+            { text: "Взбейте желтки с сахаром, добавьте маскарпоне.", time: null },
+            { text: "Введите взбитые белки, обмакните савоярди в кофе.", time: null },
+            { text: "Выложите слоями печенье и крем, посыпьте какао, охладите 4 часа.", time: 240 }
+        ]},
+        { name: "Панна-котта", category: "Десерты", ingredients: ["400 мл сливок", "100 мл молока", "70 г сахара", "10 г желатина", "ваниль", "ягодный соус"], steps: [
+            { text: "Нагрейте сливки с молоком, сахаром и ванилью, не кипятите.", time: null },
+            { text: "Введите распущенный желатин, размешайте.", time: null },
+            { text: "Разлейте по формам, охладите 4 часа, подавайте с соусом.", time: 240 }
+        ]},
+        { name: "Шоколадный фондан", category: "Десерты", ingredients: ["100 г шоколада", "100 г масла", "2 яйца", "50 г сахара", "40 г муки"], steps: [
+            { text: "Растопите шоколад с маслом на водяной бане.", time: null },
+            { text: "Взбейте яйца с сахаром, соедините с шоколадом и мукой.", time: null },
+            { text: "Разлейте по формам, выпекайте при 200°C ровно 10 минут.", time: 10 }
+        ]},
+        { name: "Желе из ягод", category: "Десерты", ingredients: ["300 г ягод", "500 мл воды", "100 г сахара", "20 г желатина"], steps: [
+            { text: "Сварите компот из ягод и сахара, процедите.", time: 10 },
+            { text: "Введите распущенный желатин.", time: null },
+            { text: "Разлейте по формам, охладите до застывания 3 часа.", time: 180 }
+        ]},
+        { name: "Печенье песочное", category: "Десерты", ingredients: ["250 г муки", "150 г масла", "100 г сахара", "1 яйцо", "ваниль"], steps: [
+            { text: "Разотрите масло с сахаром, добавьте яйцо.", time: null },
+            { text: "Введите муку, замесите тесто, охладите 30 минут.", time: 30 },
+            { text: "Раскатайте, вырежьте фигурки, выпекайте при 180°C 12 минут.", time: 12 }
+        ]},
+        { name: "Мороженое домашнее", category: "Десерты", ingredients: ["500 мл сливок", "150 г сгущёнки", "ваниль"], steps: [
+            { text: "Взбейте сливки до устойчивых пиков.", time: null },
+            { text: "Аккуратно вмешайте сгущёнку и ваниль.", time: null },
+            { text: "Заморозьте минимум 5 часов, помешивая раз в час.", time: 300 }
+        ]},
+        { name: "Профитроли", category: "Десерты", ingredients: ["100 г муки", "150 мл воды", "70 г масла", "3 яйца", "заварной крем"], steps: [
+            { text: "Заварите тесто: вскипятите воду с маслом, всыпьте муку, заварите.", time: null },
+            { text: "Остудите, вмешайте яйца по одному.", time: null },
+            { text: "Отсадите шарики, выпекайте при 200°C 25 минут, наполните кремом.", time: 25 }
+        ]},
+        // ===== НАПИТКИ =====
+        { name: "Компот из сухофруктов", category: "Напитки", ingredients: ["300 г сухофруктов", "2 л воды", "150 г сахара", "лимонная кислота"], steps: [
+            { text: "Промойте сухофрукты, залейте водой.", time: null },
+            { text: "Доведите до кипения, добавьте сахар, варите 25 минут.", time: 25 },
+            { text: "Дайте настояться под крышкой 2 часа.", time: 120 }
+        ]},
+        { name: "Глинтвейн", category: "Напитки", ingredients: ["750 мл красного вина", "1 апельсин", "корица", "гвоздика", "2 ст.л. мёда", "бадьян"], steps: [
+            { text: "Нагрейте вино со специями и дольками апельсина, не кипятите.", time: null },
+            { text: "Прогревайте на слабом огне 15 минут.", time: 15 },
+            { text: "Снимите с огня, добавьте мёд, дайте настояться 10 минут.", time: 10 }
+        ]},
+        { name: "Какао", category: "Напитки", ingredients: ["2 ст.л. какао", "2 ст.л. сахара", "500 мл молока"], steps: [
+            { text: "Смешайте какао с сахаром в кастрюле.", time: null },
+            { text: "Влейте немного молока, разотрите в пасту.", time: null },
+            { text: "Добавьте остальное молоко, прогрейте до кипения, помешивая.", time: null }
+        ]},
+        { name: "Лимонад домашний", category: "Напитки", ingredients: ["3 лимона", "150 г сахара", "1.5 л воды", "мята", "лёд"], steps: [
+            { text: "Выжмите сок лимонов, цедру отложите.", time: null },
+            { text: "Сварите сироп из части воды, сахара и цедры, остудите.", time: null },
+            { text: "Смешайте сок, сироп и воду, добавьте мяту и лёд.", time: null }
+        ]},
+        { name: "Смузи банановый", category: "Напитки", ingredients: ["2 банана", "250 мл молока или йогурта", "1 ст.л. мёда", "горсть овсянки"], steps: [
+            { text: "Очистите бананы, нарежьте.", time: null },
+            { text: "Сложите всё в блендер.", time: null },
+            { text: "Взбейте до однородности.", time: null }
+        ]},
+        { name: "Морс клюквенный", category: "Напитки", ingredients: ["300 г клюквы", "1.5 л воды", "150 г сахара"], steps: [
+            { text: "Разомните клюкву, отожмите сок.", time: null },
+            { text: "Жмых залейте водой, проварите 10 минут с сахаром, процедите.", time: 10 },
+            { text: "Соедините отвар с соком, остудите.", time: null }
+        ]},
+        { name: "Кофе латте", category: "Напитки", ingredients: ["1 порция эспрессо", "200 мл молока", "сахар по вкусу"], steps: [
+            { text: "Сварите эспрессо.", time: null },
+            { text: "Подогрейте и взбейте молоко до пены.", time: null },
+            { text: "Влейте молоко в кофе, сверху — молочная пена.", time: null }
+        ]},
+        // ===== ЗАКУСКИ =====
+        { name: "Бутерброды с красной рыбой", category: "Закуски", ingredients: ["багет", "200 г слабосолёного лосося", "сливочный сыр", "укроп", "лимон"], steps: [
+            { text: "Нарежьте багет, подсушите.", time: null },
+            { text: "Намажьте сливочным сыром.", time: null },
+            { text: "Выложите рыбу, украсьте укропом и лимоном.", time: null }
+        ]},
+        { name: "Фаршированные яйца", category: "Закуски", ingredients: ["6 яиц", "100 г печени трески или сыра", "майонез", "зелень", "соль"], steps: [
+            { text: "Отварите яйца вкрутую, разрежьте пополам, выньте желтки.", time: 10 },
+            { text: "Разомните желтки с начинкой и майонезом.", time: null },
+            { text: "Наполните половинки белков, украсьте зеленью.", time: null }
+        ]},
+        { name: "Рулетики из лаваша", category: "Закуски", ingredients: ["лаваш", "200 г творожного сыра", "ветчина", "огурец", "зелень"], steps: [
+            { text: "Смажьте лаваш творожным сыром.", time: null },
+            { text: "Выложите ветчину, полоски огурца и зелень.", time: null },
+            { text: "Сверните рулетом, охладите 30 минут, нарежьте.", time: 30 }
+        ]},
+        { name: "Хумус", category: "Закуски", ingredients: ["250 г нута", "2 ст.л. тахини", "2 зубчика чеснока", "лимонный сок", "оливковое масло", "паприка", "соль"], steps: [
+            { text: "Отварите замоченный нут до мягкости 1 час.", time: 60 },
+            { text: "Пробейте блендером с тахини, чесноком, лимоном и маслом.", time: null },
+            { text: "Доведите до кремовой текстуры, посыпьте паприкой.", time: null }
+        ]},
+        { name: "Сырные палочки", category: "Закуски", ingredients: ["200 г моцареллы", "2 яйца", "панировочные сухари", "мука", "масло для фритюра"], steps: [
+            { text: "Нарежьте сыр брусочками, обваляйте в муке, яйце и сухарях дважды.", time: null },
+            { text: "Заморозьте 30 минут.", time: 30 },
+            { text: "Обжарьте во фритюре 2 минуты до золотистого цвета.", time: 2 }
+        ]},
+        { name: "Брускетта с томатами", category: "Закуски", ingredients: ["багет", "3 помидора", "чеснок", "базилик", "оливковое масло", "соль"], steps: [
+            { text: "Нарежьте багет, подсушите, натрите чесноком.", time: null },
+            { text: "Смешайте нарезанные помидоры с базиликом, маслом и солью.", time: null },
+            { text: "Выложите смесь на хлеб.", time: null }
+        ]},
+        { name: "Куриные крылышки баффало", category: "Закуски", ingredients: ["1 кг куриных крыльев", "острый соус", "50 г масла", "чеснок", "соль, перец"], steps: [
+            { text: "Натрите крылья солью и перцем, запекайте при 200°C 35 минут.", time: 35 },
+            { text: "Смешайте острый соус с растопленным маслом и чесноком.", time: null },
+            { text: "Обваляйте горячие крылья в соусе.", time: null }
+        ]},
+        { name: "Намазка из авокадо (гуакамоле)", category: "Закуски", ingredients: ["2 авокадо", "1 помидор", "1/2 красной луковицы", "лайм", "кинза", "соль"], steps: [
+            { text: "Разомните авокадо вилкой.", time: null },
+            { text: "Добавьте мелко нарезанный помидор, лук и кинзу.", time: null },
+            { text: "Заправьте соком лайма и солью.", time: null }
+        ]},
+
+    ];
+
+    builtinRecipes.forEach(r => { r.source = 'builtin'; });
+    // recipes = встроенные + пользовательские (последние подгружаются из Supabase)
+    let recipes = builtinRecipes.slice();
+    let userRecipes = [];
+
+    const categoriesMap = new Map();
+    function rebuildCategories() {
+        recipes = builtinRecipes.concat(userRecipes);
+        categoriesMap.clear();
+        recipes.forEach(r => {
+            if (!categoriesMap.has(r.category)) categoriesMap.set(r.category, []);
+            categoriesMap.get(r.category).push(r);
+        });
+    }
+    rebuildCategories();
+
+    const categoryContainer = document.getElementById('categoryContainer');
+    const contentArea = document.getElementById('contentArea');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const timerOverlay = document.getElementById('timerOverlay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const stopTimerBtn = document.getElementById('stopTimerBtn');
+    let timerInterval = null;
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        timerOverlay.style.display = 'none';
+    }
+
+    function startTimer(minutes) {
+        stopTimer();
+        let totalSeconds = minutes * 60;
+        timerOverlay.style.display = 'flex';
+        function updateDisplay() {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = totalSeconds % 60;
+            timerDisplay.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerDisplay.textContent = "00:00";
+                alert('Время вышло!');
+                timerOverlay.style.display = 'none';
+            }
+            totalSeconds--;
+        }
+        updateDisplay();
+        timerInterval = setInterval(updateDisplay, 1000);
+    }
+
+    stopTimerBtn.addEventListener('click', stopTimer);
+    timerOverlay.addEventListener('click', (e) => {
+        if (e.target === timerOverlay) stopTimer();
+    });
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function recipeIndex(rec) { return recipes.indexOf(rec); }
+
+    function renderCategories() {
+        categoryContainer.innerHTML = '';
+        for (let [category] of categoriesMap.entries()) {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'category-item';
+            catDiv.textContent = category;
+            catDiv.addEventListener('click', () => {
+                showRecipesByCategory(category, categoriesMap.get(category), catDiv);
+            });
+            categoryContainer.appendChild(catDiv);
+        }
+    }
+
+    function recipeButtonsHtml(list) {
+        return list.map(rec => {
+            const cls = rec.source === 'user' ? 'recipe-link user-recipe' : 'recipe-link';
+            return `<button class="${cls}" data-idx="${recipeIndex(rec)}">${escapeHtml(rec.name)}</button>`;
+        }).join('');
+    }
+    function bindRecipeButtons() {
+        document.querySelectorAll('.recipe-link').forEach(btn => {
+            btn.addEventListener('click', () => displayRecipe(parseInt(btn.getAttribute('data-idx'), 10)));
+        });
+    }
+
+    function showRecipesByCategory(category, recipeList, catElement) {
+        document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+        if (catElement) catElement.classList.add('active');
+        let html = `<h2 style="color:#b3421c; margin-bottom:15px;">${escapeHtml(category)}</h2>`;
+        html += `<div style="display:flex; flex-wrap:wrap; gap:10px;">${recipeButtonsHtml(recipeList)}</div>`;
+        contentArea.innerHTML = html;
+        bindRecipeButtons();
+    }
+
+    function displayRecipe(idx) {
+        const recipe = recipes[idx];
+        if (!recipe) return;
+        let authorBadge = '';
+        if (recipe.source === 'user' && recipe.author) {
+            authorBadge = `<span class="author-badge">от ${escapeHtml(recipe.author)}</span>`;
+        }
+        let html = `<div class="recipe-title">${escapeHtml(recipe.name)}${authorBadge}</div>`;
+        html += `<div class="ingredients-block"><h3>Ингредиенты</h3><ul class="ingredient-list">`;
+        recipe.ingredients.forEach(ing => html += `<li>${escapeHtml(ing)}</li>`);
+        html += `</ul></div>`;
+        html += `<div class="steps-block"><h3>Приготовление</h3>`;
+        recipe.steps.forEach((step, i) => {
+            html += `<div class="step-card">`;
+            html += `<div class="step-text"><strong>Шаг ${i+1}:</strong> ${escapeHtml(step.text)}</div>`;
+            if (step.time) {
+                html += `<button class="timer-btn" data-minutes="${step.time}">${step.time} мин</button>`;
+            }
+            html += `</div>`;
+        });
+        html += `</div>`;
+        contentArea.innerHTML = html;
+        document.querySelectorAll('.timer-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const minutes = parseInt(btn.getAttribute('data-minutes'), 10);
+                if (!isNaN(minutes)) startTimer(minutes);
+            });
+        });
+    }
+
+    function searchRecipe() {
+        const query = searchInput.value.trim().toLowerCase();
+        if (!query) return;
+        const found = recipes.filter(r => r.name.toLowerCase().includes(query));
+        if (found.length === 0) {
+            contentArea.innerHTML = `<div class="default-message">Блюдо не найдено. Попробуйте другой запрос.</div>`;
+            return;
+        }
+        if (found.length === 1) {
+            displayRecipe(recipeIndex(found[0]));
+        } else {
+            contentArea.innerHTML = `<h2 style="color:#b3421c;">Результаты поиска</h2><div style="display:flex; flex-wrap:wrap; gap:10px;">${recipeButtonsHtml(found)}</div>`;
+            bindRecipeButtons();
+        }
+    }
+
+    searchBtn.addEventListener('click', searchRecipe);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchRecipe();
+    });
+
+    let activeCategory = null;
+    function refreshUI(keepActive) {
+        rebuildCategories();
+        renderCategories();
+        const target = (keepActive && categoriesMap.has(activeCategory))
+            ? activeCategory
+            : categoriesMap.keys().next().value;
+        if (target) {
+            activeCategory = target;
+            const items = [...document.querySelectorAll('.category-item')];
+            const el = items.find(i => i.textContent === target) || items[0];
+            showRecipesByCategory(target, categoriesMap.get(target), el);
+        }
+    }
+    // запоминаем выбранную категорию при клике
+    categoryContainer.addEventListener('click', (e) => {
+        const item = e.target.closest('.category-item');
+        if (item) activeCategory = item.textContent;
+    });
+
+    refreshUI(false);
+
+    // ===================== SUPABASE: личный кабинет =====================
+    // datalist категорий для формы рецепта
+    function refreshCatList() {
+        const dl = document.getElementById('catList');
+        dl.innerHTML = [...categoriesMap.keys()].map(c => `<option value="${escapeHtml(c)}">`).join('');
+    }
+    refreshCatList();
+
+    const accountBar = document.getElementById('accountBar');
+
+    // --- helpers модалок ---
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+        document.querySelectorAll('.form-msg').forEach(m => { m.className = 'form-msg'; m.textContent = ''; });
+    }
+    document.querySelectorAll('[data-close]').forEach(b => {
+        b.addEventListener('click', () => closeModal(b.getAttribute('data-close')));
+    });
+    document.querySelectorAll('.modal-overlay').forEach(ov => {
+        ov.addEventListener('click', e => { if (e.target === ov) closeModal(ov.id); });
+    });
+
+    function showMsg(id, text, kind) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.className = 'form-msg ' + kind;
+    }
+
+    // --- режим авторизации ---
+    let authMode = 'login';
+    function setAuthMode(mode) {
+        authMode = mode;
+        document.getElementById('authTitle').textContent = mode === 'login' ? 'Вход' : 'Регистрация';
+        document.getElementById('authSubmitBtn').textContent = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
+        document.getElementById('authSwitch').innerHTML = mode === 'login'
+            ? `Нет аккаунта? <button id="toRegister">Зарегистрироваться</button>`
+            : `Уже есть аккаунт? <button id="toLogin">Войти</button>`;
+        const t = document.getElementById(mode === 'login' ? 'toRegister' : 'toLogin');
+        if (t) t.addEventListener('click', () => setAuthMode(mode === 'login' ? 'register' : 'login'));
+    }
+
+    // ---------- Конфигурация Supabase ----------
+    // Вставьте сюда данные из вашего проекта Supabase (Project Settings → API):
+    const SUPABASE_URL = 'ВАШ_SUPABASE_URL';            // напр. https://abcdxyz.supabase.co
+    const SUPABASE_KEY = 'ВАШ_PUBLISHABLE_KEY';          // ключ sb_publishable_... (или anon, если проект старый)
+
+    const isConfigured = !SUPABASE_URL.startsWith('ВАШ') && !SUPABASE_KEY.startsWith('ВАШ');
+    let supabase = null;
+    let currentUser = null;
+
+    function renderAccountBar() {
+        if (!isConfigured) {
+            accountBar.innerHTML = `<span class="user-email" style="background:#fff3cd;color:#7a5a00;">⚙ Supabase не настроен</span>`;
+            return;
+        }
+        if (currentUser) {
+            accountBar.innerHTML = `
+                <span class="user-email">${escapeHtml(currentUser.email)}</span>
+                <button class="btn-pill primary" id="addRecipeBtn">+ Добавить рецепт</button>
+                <button class="btn-pill ghost" id="logoutBtn">Выйти</button>`;
+            document.getElementById('addRecipeBtn').addEventListener('click', () => { refreshCatList(); openModal('recipeOverlay'); });
+            document.getElementById('logoutBtn').addEventListener('click', doLogout);
+        } else {
+            accountBar.innerHTML = `
+                <button class="btn-pill" id="loginBtn">Вход</button>
+                <button class="btn-pill primary" id="registerBtn">Регистрация</button>`;
+            document.getElementById('loginBtn').addEventListener('click', () => { setAuthMode('login'); openModal('authOverlay'); });
+            document.getElementById('registerBtn').addEventListener('click', () => { setAuthMode('register'); openModal('authOverlay'); });
+        }
+    }
+
+    async function doLogout() {
+        if (supabase) await supabase.auth.signOut();
+        currentUser = null;
+        renderAccountBar();
+    }
+
+    // парсинг текстовых полей формы в структуру рецепта
+    function parseRecipeForm() {
+        const name = document.getElementById('frName').value.trim();
+        const category = document.getElementById('frCategory').value.trim();
+        const ingredients = document.getElementById('frIngredients').value
+            .split('\n').map(s => s.trim()).filter(Boolean);
+        const steps = document.getElementById('frSteps').value
+            .split('\n').map(s => s.trim()).filter(Boolean)
+            .map(line => {
+                const m = line.match(/^(.*?)\s*\|\s*(\d+)\s*$/);
+                if (m) return { text: m[1].trim(), time: parseInt(m[2], 10) };
+                return { text: line, time: null };
+            });
+        return { name, category, ingredients, steps };
+    }
+
+    // преобразование строки БД -> объект рецепта приложения
+    function rowToRecipe(row) {
+        return {
+            name: row.name,
+            category: row.category,
+            ingredients: row.ingredients || [],
+            steps: row.steps || [],
+            source: 'user',
+            author: (row.author_email || '').split('@')[0] || 'аноним'
+        };
+    }
+
+    async function loadUserRecipes() {
+        if (!supabase) return;
+        const { data, error } = await supabase
+            .from('recipes')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) { console.error('Загрузка рецептов:', error.message); return; }
+        userRecipes = (data || []).map(rowToRecipe);
+        refreshUI(true);
+        refreshCatList();
+    }
+
+    async function submitRecipe() {
+        const r = parseRecipeForm();
+        if (!r.name || !r.category || r.ingredients.length === 0 || r.steps.length === 0) {
+            showMsg('frMsg', 'Заполните название, категорию, ингредиенты и шаги.', 'err');
+            return;
+        }
+        if (!currentUser) { showMsg('frMsg', 'Сначала войдите в аккаунт.', 'err'); return; }
+        const { error } = await supabase.from('recipes').insert({
+            name: r.name,
+            category: r.category,
+            ingredients: r.ingredients,
+            steps: r.steps,
+            user_id: currentUser.id,
+            author_email: currentUser.email
+        });
+        if (error) { showMsg('frMsg', 'Ошибка: ' + error.message, 'err'); return; }
+        showMsg('frMsg', 'Рецепт опубликован!', 'ok');
+        ['frName','frCategory','frIngredients','frSteps'].forEach(id => document.getElementById(id).value = '');
+        await loadUserRecipes();
+        setTimeout(() => closeModal('recipeOverlay'), 900);
+    }
+
+    async function submitAuth() {
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        if (!email || !password) { showMsg('authMsg', 'Введите email и пароль.', 'err'); return; }
+        let res;
+        if (authMode === 'login') {
+            res = await supabase.auth.signInWithPassword({ email, password });
+        } else {
+            res = await supabase.auth.signUp({ email, password });
+        }
+        if (res.error) { showMsg('authMsg', res.error.message, 'err'); return; }
+        if (authMode === 'register' && !res.data.session) {
+            showMsg('authMsg', 'Проверьте почту и подтвердите регистрацию, затем войдите.', 'ok');
+            return;
+        }
+        currentUser = res.data.user;
+        renderAccountBar();
+        showMsg('authMsg', 'Готово!', 'ok');
+        setTimeout(() => closeModal('authOverlay'), 600);
+    }
+
+    document.getElementById('authSubmitBtn').addEventListener('click', submitAuth);
+    document.getElementById('authPassword').addEventListener('keypress', e => { if (e.key === 'Enter') submitAuth(); });
+    document.getElementById('frSubmitBtn').addEventListener('click', submitRecipe);
+
+    // инициализация клиента Supabase (динамический импорт ESM с CDN)
+    (async function initSupabase() {
+        renderAccountBar();
+        if (!isConfigured) {
+            const warn = document.createElement('div');
+            warn.className = 'config-warning';
+            warn.innerHTML = 'Личный кабинет выключен: не заданы <b>SUPABASE_URL</b> и ключ. ' +
+                'Откройте исходный код, найдите блок «Конфигурация Supabase» и вставьте данные вашего проекта. ' +
+                'Встроенные рецепты работают без настройки.';
+            document.querySelector('.content-area').prepend(warn);
+            return;
+        }
+        try {
+            const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+            supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+            const { data } = await supabase.auth.getSession();
+            currentUser = data.session ? data.session.user : null;
+            renderAccountBar();
+            supabase.auth.onAuthStateChange((_e, session) => {
+                currentUser = session ? session.user : null;
+                renderAccountBar();
+            });
+            await loadUserRecipes();
+        } catch (err) {
+            console.error('Supabase init error:', err);
+            accountBar.innerHTML = `<span class="user-email" style="background:#fde0db;color:#9e2b1a;">Ошибка подключения к Supabase</span>`;
+        }
+    })();
+</script>
+</body>
+</html>
